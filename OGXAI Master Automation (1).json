@@ -1,0 +1,553 @@
+{
+  "name": "OGXAI Master Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $node[\"Search files and folders\"].json[\"id\"] }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -160,
+        -704
+      ],
+      "id": "ef9b53e5-6003-45e5-9a8e-cc76385c5d57",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "RNB5BZVZdGxL28ct",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{$json.title}}",
+        "regionCode": "IN",
+        "categoryId": "27",
+        "binaryProperty": "=data",
+        "options": {
+          "defaultLanguage": "hi",
+          "description": "={{$json.description}}",
+          "embeddable": true,
+          "license": "youtube",
+          "privacyStatus": "unlisted",
+          "publicStatsViewable": true,
+          "selfDeclaredMadeForKids": false
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        128,
+        -912
+      ],
+      "id": "cd81bdc7-fe3f-4419-84aa-5aaa3474a881",
+      "name": "Upload a video",
+      "alwaysOutputData": true,
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "Qq3vx6pZntJgLthE",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "=0 0 10,14,18,21 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -608,
+        -704
+      ],
+      "id": "5a193421-74fa-4b35-9862-83ecb9b27ffe",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "limit": 1,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1A-7Q7VxnalONGr80TofJPaadnyfy--JI",
+            "mode": "list",
+            "cachedResultName": "03_READY",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1A-7Q7VxnalONGr80TofJPaadnyfy--JI"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -384,
+        -704
+      ],
+      "id": "e1ef8d81-3d97-4d5e-8f02-07e086780fea",
+      "name": "Search files and folders",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "RNB5BZVZdGxL28ct",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "Return ONLY valid JSON.\nAap ek elite-tier viral documentary aur tech content creator ho. Is video/audio ka context, voice modulation aur hooks achhe se samjho. Hamein is video ko high-retention \"BackendBharat\" cinematic style distribution ke liye deploy karna hai. \n\nIs pure context ko analyze karke ek strict JSON output generate karke do. Response me JSON ke alawa aur koi professional conversational text, introduction, backticks (```), ya markdown format nahi hona chahiye. JSON keys strictly lowercase honi chahiye:\n\n{\n  \"title\": \"Ek dum catchy, curiosity-driven viral  real Hindi title likho jisme 3 hashtag aur ek realistic emoji ho\",\n  \"hook\": \"Pehli 3 seconds ka high-retention video hook text jo audience ko rok le\",\n  \"description\": \"Video ki saari main details ko cover karta hua ek clean, engaging real hindi description aur end me relevant hashtags jaise #Shorts #ATM #technology #viral #backendbharat bina space ke array ke roop me\",\n  \"tags\": [\"tag1\", \"tag2\", \"tag3\", \"tag4\", \"tag5\"]\n}\nReturn ONLY valid JSON.\nDo NOT wrap it inside ```json or ``` fences.\nNo explanation.",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        -464
+      ],
+      "id": "c1265bb1-a151-498f-9408-a4cdbd3cbfe9",
+      "name": "Analyze audio",
+      "retryOnFail": true,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "sBZPospyKrq4aT7L",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v25.0",
+        "node": "993082607231978",
+        "edge": "videos",
+        "sendBinaryData": true,
+        "binaryPropertyName": "data",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "description",
+                "value": "={{ $('Code in JavaScript').item.json.title }}\n\n{{ $('Code in JavaScript').item.json.description }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -1136
+      ],
+      "id": "f7142ca4-492a-4ac3-a368-904fa4b37fce",
+      "name": "Facebook Graph API",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "gqdaMnZZorMETyON",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n\n  const raw = item.json.content.parts[0].text;\n\n  const cleaned = raw.replace(/```json|```/g, \"\").trim();\n\n  const data = JSON.parse(cleaned);\n\n  return {\n    json: {\n      title: data.title,\n      description: data.description,\n      tags: data.tags\n    },\n    binary: item.binary\n  };\n\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        -464
+      ],
+      "id": "12573cf6-ade5-45da-9266-e895ceeb4c5a",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        144,
+        -688
+      ],
+      "id": "01b345d5-2847-4e6c-9d5f-bceb06818adf",
+      "name": "Merge",
+      "alwaysOutputData": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "operation": "uploadFile",
+        "resource_type_file": "video",
+        "additionalFieldsFile": {
+          "folder": ""
+        }
+      },
+      "type": "n8n-nodes-cloudinary.cloudinary",
+      "typeVersion": 2,
+      "position": [
+        -432,
+        -1088
+      ],
+      "id": "68d72f59-33f4-4d67-9daf-a9dba0579494",
+      "name": "Cloudinary Upload",
+      "credentials": {
+        "cloudinaryApi": {
+          "id": "gif33QcxibwQSTNE",
+          "name": "Cloudinary account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "reels",
+        "node": "17841480740435886",
+        "videoUrl": "={{ $('Cloudinary Upload').first().json.secure_url }}",
+        "caption": "={{ $('Code in JavaScript').first().json.title + \"\\n\\n\" + $('Code in JavaScript').first().json.description }}",
+        "additionalFields": {}
+      },
+      "type": "@mookielianhd/n8n-nodes-instagram.instagram",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -1136
+      ],
+      "id": "c8825ad3-3033-4ab4-8f61-0f42cd515b74",
+      "name": "Publish",
+      "alwaysOutputData": true,
+      "executeOnce": false,
+      "retryOnFail": true,
+      "credentials": {
+        "instagramApi": {
+          "id": "G9o2m2ngRo1I53pf",
+          "name": "Instagram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "ogxsaud@gmail.com",
+        "subject": "OGXV1 UPLOAD REPORT",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n<style>\nbody{font-family:Arial;background:#0f172a;color:#fff;padding:30px;}\n.card{background:#1e293b;border-radius:15px;padding:25px;max-width:700px;margin:auto;}\nh1{color:#22c55e;}\ntable{width:100%;border-collapse:collapse;}\ntd{padding:10px;border-bottom:1px solid #334155;}\n.success{color:#22c55e;font-weight:bold;}\n.wait{color:#facc15;font-weight:bold;}\n</style>\n</head>\n\n<body>\n\n<div class=\"card\">\n\n<h1>✅ BACKENDBHARAT COMMAND CENTER</h1>\n\n<table>\n\n<tr>\n<td>🎬 Video</td>\n<td>{{TITLE}}</td>\n</tr>\n\n<tr>\n<td>📺 YouTube</td>\n<td class=\"success\">Uploaded ✅</td>\n</tr>\n\n<tr>\n<td>📸 Instagram</td>\n<td class=\"success\">Uploaded ✅</td>\n</tr>\n\n<tr>\n<td>📘 Facebook</td>\n<td class=\"success\">Uploaded ✅</td>\n</tr>\n\n<tr>\n<td>📁 Drive</td>\n<td class=\"success\">Archived ✅</td>\n</tr>\n\n<tr>\n<td>📊 Analytics</td>\n<td class=\"wait\">Waiting (1 Hour)</td>\n</tr>\n\n<tr>\n<td>🕒 Time</td>\n<td>{{ $now }}</td>\n</tr>\n\n</table>\n\n</div>\n\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1152,
+        -1136
+      ],
+      "id": "f1f339e3-2eee-443e-a37b-9768be6f490c",
+      "name": "Send a message",
+      "webhookId": "56458296-081b-4a32-a436-cdeac363a88f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hzek49tSXYAjly1D",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -208,
+        -1136
+      ],
+      "id": "52ffafbd-e651-4302-b36a-ebc63f648f75",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        -1136
+      ],
+      "id": "f639af95-b669-4dde-8e55-391a6b224f81",
+      "name": "Wait",
+      "webhookId": "eb564c1f-6c8d-42ab-b58c-0da271ee5a2b"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        432,
+        -1136
+      ],
+      "id": "3d21edc9-9de7-4ec5-861c-a133d329752b",
+      "name": "Wait1",
+      "webhookId": "a804af83-2336-4e03-8aac-0c4c846d3b09"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Search files and folders').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1gojSb-SZxbPsJKEhHXswCkV_cLtdhFK_",
+          "mode": "list",
+          "cachedResultName": "04_UPLOADED",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1gojSb-SZxbPsJKEhHXswCkV_cLtdhFK_"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        880,
+        -1136
+      ],
+      "id": "9610c3f9-b02c-4b3b-ad4a-f8aa8404210d",
+      "name": "Move file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "RNB5BZVZdGxL28ct",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Analyze audio",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Cloudinary Upload",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a video": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze audio": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Graph API": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Upload a video",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Cloudinary Upload": {
+      "main": [
+        []
+      ]
+    },
+    "Publish": {
+      "main": [
+        [
+          {
+            "node": "Move file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Facebook Graph API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Publish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move file": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "c770d064-bdda-416f-b1ba-68023dfb3012",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2cc90e8d275de4cbd9b701c42bf57042c7b1bfa0ad8ac221c049d0b9f031963c"
+  },
+  "nodeGroups": [],
+  "id": "bysmrqKPd7l41Zlx",
+  "tags": [
+    {
+      "name": "LOCAL",
+      "id": "NmGDtpdUtn0L6Yyd",
+      "updatedAt": "2026-06-30T15:52:47.031Z",
+      "createdAt": "2026-06-30T15:52:47.031Z"
+    }
+  ]
+}
