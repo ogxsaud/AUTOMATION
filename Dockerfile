@@ -1,3 +1,4 @@
-FROM n8nio/n8n:1.50.2-debian
+FROM n8nio/n8n:2.28.3-debian
 ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+ENV N8N_METRICS=false
 CMD ["n8n", "start"]
